@@ -1,0 +1,19 @@
+
+{
+  "name": "mira-ai",
+  "version": "1.0.0",
+  "private": true,
+  "description": "MIRA AI - A premium 3D female AI assistant created by Rishikesh Singh",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0",
+    "helmet": "^8.0.0",
+    "openai": "^4.85.0"
+  }
+}
