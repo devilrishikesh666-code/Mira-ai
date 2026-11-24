@@ -1,0 +1,216 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#10100e">
+  <meta name="description" content="MIRA AI — Your intelligent personal assistant.">
+  <title>MIRA AI — Intelligent Assistant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="ambient ambient-one"></div>
+  <div class="ambient ambient-two"></div>
+
+  <header class="topbar">
+    <a class="brand" href="#">
+      <span class="brand-mark">M</span>
+      <span>MIRA<span class="brand-light"> AI</span></span>
+    </a>
+
+    <nav class="nav-links">
+      <button class="nav-button active" id="chatTab">Assistant</button>
+      <button class="nav-button" id="apiTab">API Control</button>
+    </nav>
+
+    <div class="top-status">
+      <span class="status-dot"></span>
+      <span id="topStatus">Checking</span>
+    </div>
+  </header>
+
+  <main class="main-layout">
+
+    <!-- CHAT PAGE -->
+    <section class="chat-page" id="chatPage">
+      <aside class="intro-panel">
+        <div class="character-stage">
+          <div class="orbit orbit-a"></div>
+          <div class="orbit orbit-b"></div>
+          <div class="character-glow"></div>
+
+          <div class="character-card">
+            <img
+              src="mira-avatar.png"
+              alt="MIRA AI assistant avatar"
+              id="miraAvatar"
+              onerror="this.style.display='none';document.getElementById('avatarFallback').style.display='grid';"
+            >
+            <div class="avatar-fallback" id="avatarFallback">M</div>
+          </div>
+
+          <div class="floating-label label-top">INTELLIGENCE</div>
+          <div class="floating-label label-bottom">MIRA SYSTEM</div>
+        </div>
+
+        <div class="intro-copy">
+          <span class="eyebrow">YOUR PERSONAL AI</span>
+          <h1>Meet <span>MIRA.</span></h1>
+          <p>
+            A thoughtful AI companion for ideas, learning, creativity
+            and building something extraordinary.
+          </p>
+        </div>
+
+        <div class="feature-pills">
+          <span>Creative thinking</span>
+          <span>Coding support</span>
+          <span>Smart assistance</span>
+        </div>
+      </aside>
+
+      <section class="chat-panel">
+        <div class="chat-heading">
+          <div>
+            <span class="eyebrow">MIRA CONVERSATION</span>
+            <h2>Your space to create.</h2>
+          </div>
+          <button class="clear-button" id="clearChat">Clear chat</button>
+        </div>
+
+        <div class="messages" id="messages">
+          <div class="welcome-message">
+            <div class="welcome-icon">✦</div>
+            <h3>Hello, I'm MIRA.</h3>
+            <p>What would you like to explore today?</p>
+            <div class="suggestions">
+              <button class="suggestion">Help me build a website</button>
+              <button class="suggestion">Explain a difficult topic</button>
+              <button class="suggestion">Give me creative ideas</button>
+              <button class="suggestion">Help me write code</button>
+            </div>
+          </div>
+        </div>
+
+        <form class="composer" id="chatForm">
+          <textarea
+            id="messageInput"
+            rows="1"
+            maxlength="5000"
+            placeholder="Message MIRA..."
+            aria-label="Message MIRA"
+            required
+          ></textarea>
+          <button class="send-button" type="submit" id="sendButton">
+            <span>↑</span>
+          </button>
+        </form>
+        <p class="disclaimer">MIRA can make mistakes. Check important information.</p>
+      </section>
+    </section>
+
+    <!-- API CONTROL PAGE -->
+    <section class="api-page hidden" id="apiPage">
+      <div class="api-heading">
+        <span class="eyebrow">PRIVATE OWNER AREA</span>
+        <h1>API <span>Control Center</span></h1>
+        <p>Manage the MIRA connection and test your server API.</p>
+      </div>
+
+      <div class="owner-login card">
+        <div class="card-heading">
+          <div>
+            <span class="eyebrow">AUTHENTICATION</span>
+            <h2>Owner access</h2>
+          </div>
+          <span class="lock-icon">⌑</span>
+        </div>
+        <label for="ownerToken">Owner dashboard token</label>
+        <input
+          type="password"
+          id="ownerToken"
+          placeholder="Enter your private owner token"
+          autocomplete="off"
+        >
+        <div class="inline-actions">
+          <button class="gold-button" id="connectOwner">Unlock dashboard</button>
+          <span id="ownerStatus" class="muted">Locked</span>
+        </div>
+        <p class="small-note">
+          Your token is kept only in this page's memory and is not saved in local storage.
+        </p>
+      </div>
+
+      <div class="api-grid">
+        <div class="card api-card">
+          <span class="eyebrow">PROVIDER</span>
+          <h2>OpenAI</h2>
+          <p>AI service provider</p>
+        </div>
+
+        <div class="card api-card">
+          <span class="eyebrow">API KEY</span>
+          <h2 id="keyStatus">Locked</h2>
+          <p>Server-side secret status</p>
+        </div>
+
+        <div class="card api-card">
+          <span class="eyebrow">CONNECTION</span>
+          <h2 id="connectionStatus">Locked</h2>
+          <p>Latest API status</p>
+        </div>
+      </div>
+
+      <div class="card settings-card">
+        <div class="card-heading">
+          <div>
+            <span class="eyebrow">CONFIGURATION</span>
+            <h2>AI settings</h2>
+          </div>
+          <span class="settings-symbol">⚙</span>
+        </div>
+
+        <label for="modelInput">Model name</label>
+        <input id="modelInput" type="text" value="gpt-4.1-mini" autocomplete="off">
+
+        <label class="toggle-row" for="aiEnabled">
+          <span>
+            <strong>Enable MIRA AI</strong>
+            <small>Allow visitors to send messages.</small>
+          </span>
+          <input type="checkbox" id="aiEnabled" checked>
+        </label>
+
+        <div class="inline-actions">
+          <button class="gold-button" id="saveSettings">Save settings</button>
+          <button class="outline-button" id="testApi">Test API connection</button>
+        </div>
+
+        <p id="apiMessage" class="api-message" aria-live="polite">
+          Unlock the owner dashboard to manage settings.
+        </p>
+      </div>
+
+      <div class="card security-card">
+        <span class="eyebrow">SECURITY NOTICE</span>
+        <p>
+          The OpenAI API key is stored on the server in its environment variables.
+          It is never sent to the browser. Model and enable/disable changes made here
+          are held in server memory and reset when the server restarts.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>© 2026 MIRA AI</span>
+    <span>Designed & developed by <strong>Rishikesh Singh</strong></span>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
