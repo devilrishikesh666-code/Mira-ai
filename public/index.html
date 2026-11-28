@@ -78,6 +78,7 @@
             <span class="eyebrow">MIRA CONVERSATION</span>
             <h2>Your space to create.</h2>
             <p class="model-line" id="modelLine">Checking model…</p>
+            <p class="owner-badge" id="ownerBadge" hidden>Owner Mode active</p>
           </div>
           <div class="chat-actions">
             <button class="clear-button" id="exportChat">Export</button>
@@ -145,7 +146,8 @@
           autocomplete="off"
         >
         <div class="inline-actions">
-          <button class="gold-button" id="connectOwner">Unlock dashboard</button>
+          <button class="gold-button" id="connectOwner">Unlock Owner Mode</button>
+          <button class="outline-button" id="lockOwner" type="button">Lock</button>
           <span id="ownerStatus" class="muted">Locked</span>
         </div>
         <p class="small-note">

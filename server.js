@@ -69,24 +69,29 @@ Personality:
 - Keep responses age-appropriate and safe.
 `;
 
-function ownerOnly(req, res, next) {
+function isOwnerRequest(req) {
   const expected = process.env.OWNER_DASHBOARD_TOKEN;
   const supplied = req.get("x-owner-token") || "";
 
-  if (!expected) {
+  if (!expected || !supplied) return false;
+
+  const expectedBuffer = Buffer.from(expected);
+  const suppliedBuffer = Buffer.from(supplied);
+
+  return (
+    expectedBuffer.length === suppliedBuffer.length &&
+    crypto.timingSafeEqual(expectedBuffer, suppliedBuffer)
+  );
+}
+
+function ownerOnly(req, res, next) {
+  if (!process.env.OWNER_DASHBOARD_TOKEN) {
     return res.status(503).json({
       error: "Owner dashboard is not configured on the server."
     });
   }
 
-  const expectedBuffer = Buffer.from(expected);
-  const suppliedBuffer = Buffer.from(supplied);
-
-  const valid =
-    expectedBuffer.length === suppliedBuffer.length &&
-    crypto.timingSafeEqual(expectedBuffer, suppliedBuffer);
-
-  if (!valid) {
+  if (!isOwnerRequest(req)) {
     return res.status(401).json({
       error: "Owner authentication failed."
     });
@@ -112,11 +117,15 @@ function safeMessages(messages) {
     }));
 }
 
-async function createChatReply(messages) {
+async function createChatReply(messages, ownerMode = false) {
+  const ownerInstruction = ownerMode
+    ? "Verified Owner Mode is active. The server has verified the private owner code, so the person speaking is Rishikesh Singh, the owner and creator of MIRA AI. Address him respectfully as the owner when relevant, help with coding, prompting, project planning, and dashboard questions, and never reveal or repeat the owner code."
+    : "Owner Mode is not active. Treat the person as a normal visitor and do not claim they are the owner.";
+
   const response = await client.chat.completions.create({
     model: activeModel,
     messages: [
-      { role: "system", content: MIRA_INSTRUCTIONS },
+      { role: "system", content: `${MIRA_INSTRUCTIONS}\n\n${ownerInstruction}` },
       ...messages
     ],
     temperature: 0.7
@@ -160,8 +169,9 @@ app.post("/api/chat", chatLimiter, async (req, res) => {
       });
     }
 
-    const reply = await createChatReply(messages);
-    res.json({ reply, provider, model: activeModel });
+    const ownerMode = isOwnerRequest(req);
+    const reply = await createChatReply(messages, ownerMode);
+    res.json({ reply, provider, model: activeModel, ownerMode });
   } catch (error) {
     console.error("Chat API error:", error.message);
 

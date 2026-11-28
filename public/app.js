@@ -11,9 +11,11 @@ const sendButton = document.getElementById("sendButton");
 const voiceButton = document.getElementById("voiceButton");
 const speakRepliesInput = document.getElementById("speakReplies");
 const modelLine = document.getElementById("modelLine");
+const ownerBadge = document.getElementById("ownerBadge");
 
 const ownerTokenInput = document.getElementById("ownerToken");
 const connectOwnerButton = document.getElementById("connectOwner");
+const lockOwnerButton = document.getElementById("lockOwner");
 const ownerStatus = document.getElementById("ownerStatus");
 
 const modelInput = document.getElementById("modelInput");
@@ -67,6 +69,24 @@ function loadConversation() {
 
 function saveConversation() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(conversation.slice(-40)));
+}
+
+function setOwnerModeUI(active) {
+  ownerBadge.hidden = !active;
+  if (active) {
+    ownerStatus.textContent = "Owner Mode active";
+    ownerStatus.style.color = "#83c99b";
+  }
+}
+
+function lockOwnerMode() {
+  ownerToken = "";
+  ownerUnlocked = false;
+  ownerTokenInput.value = "";
+  setOwnerModeUI(false);
+  ownerStatus.textContent = "Locked";
+  ownerStatus.style.color = "";
+  apiMessage.textContent = "Owner Mode locked. Unlock again to manage MIRA settings.";
 }
 
 function welcomeHtml() {
@@ -181,9 +201,14 @@ async function sendMessage(text) {
   const loadingMessage = addMessage("assistant", "MIRA is thinking…");
 
   try {
+    const headers = { "Content-Type": "application/json" };
+    if (ownerUnlocked && ownerToken) {
+      headers["x-owner-token"] = ownerToken;
+    }
+
     const response = await fetch("/api/chat", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers,
       body: JSON.stringify({ messages: conversation.slice(-16) })
     });
 
@@ -194,6 +219,7 @@ async function sendMessage(text) {
       throw new Error(data.error || "Something went wrong.");
     }
 
+    setOwnerModeUI(Boolean(data.ownerMode));
     const reply = data.reply || "I could not create a response.";
     conversation.push({ role: "assistant", content: reply });
     saveConversation();
@@ -341,11 +367,10 @@ async function loadOwnerStatus() {
   keyStatus.textContent = data.apiKeyConfigured ? "Configured" : "Missing";
   connectionStatus.textContent = data.enabled ? "Enabled" : "Disabled";
 
-  ownerStatus.textContent = "Dashboard unlocked";
-  ownerStatus.style.color = "#83c99b";
-
-  apiMessage.textContent = "Owner dashboard connected. You can now manage MIRA settings.";
   ownerUnlocked = true;
+  setOwnerModeUI(true);
+
+  apiMessage.textContent = "Owner Mode active. MIRA now knows the verified owner is here, and you can manage settings.";
 }
 
 connectOwnerButton.addEventListener("click", async () => {
@@ -364,12 +389,15 @@ connectOwnerButton.addEventListener("click", async () => {
   } catch (error) {
     ownerUnlocked = false;
     ownerToken = "";
+    setOwnerModeUI(false);
     ownerStatus.textContent = error.message;
     ownerStatus.style.color = "#e18b7d";
   } finally {
     connectOwnerButton.disabled = false;
   }
 });
+
+lockOwnerButton.addEventListener("click", lockOwnerMode);
 
 /* SAVE SETTINGS */
 
@@ -429,4 +457,5 @@ document.getElementById("testApi").addEventListener("click", async () => {
 window.addEventListener("pagehide", () => {
   ownerToken = "";
   ownerUnlocked = false;
+  setOwnerModeUI(false);
 });
