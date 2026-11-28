@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -78,8 +77,12 @@
           <div>
             <span class="eyebrow">MIRA CONVERSATION</span>
             <h2>Your space to create.</h2>
+            <p class="model-line" id="modelLine">Checking model…</p>
           </div>
-          <button class="clear-button" id="clearChat">Clear chat</button>
+          <div class="chat-actions">
+            <button class="clear-button" id="exportChat">Export</button>
+            <button class="clear-button" id="clearChat">Clear chat</button>
+          </div>
         </div>
 
         <div class="messages" id="messages">
@@ -97,6 +100,7 @@
         </div>
 
         <form class="composer" id="chatForm">
+          <button class="voice-button" type="button" id="voiceButton" aria-label="Voice input">🎙</button>
           <textarea
             id="messageInput"
             rows="1"
@@ -105,10 +109,14 @@
             aria-label="Message MIRA"
             required
           ></textarea>
-          <button class="send-button" type="submit" id="sendButton">
+          <button class="send-button" type="submit" id="sendButton" aria-label="Send message">
             <span>↑</span>
           </button>
         </form>
+        <label class="speak-toggle">
+          <input type="checkbox" id="speakReplies">
+          <span>Speak replies aloud</span>
+        </label>
         <p class="disclaimer">MIRA can make mistakes. Check important information.</p>
       </section>
     </section>
@@ -148,7 +156,7 @@
       <div class="api-grid">
         <div class="card api-card">
           <span class="eyebrow">PROVIDER</span>
-          <h2>OpenAI</h2>
+          <h2 id="providerName">Locked</h2>
           <p>AI service provider</p>
         </div>
 
@@ -175,7 +183,17 @@
         </div>
 
         <label for="modelInput">Model name</label>
-        <input id="modelInput" type="text" value="gpt-4.1-mini" autocomplete="off">
+        <input id="modelInput" type="text" value="openrouter/auto" list="modelSuggestions" autocomplete="off">
+        <datalist id="modelSuggestions">
+          <option value="openrouter/auto"></option>
+          <option value="openai/gpt-4o-mini"></option>
+          <option value="anthropic/claude-3.5-sonnet"></option>
+          <option value="google/gemini-2.0-flash-001"></option>
+          <option value="meta-llama/llama-3.3-70b-instruct"></option>
+          <option value="deepseek/deepseek-chat"></option>
+          <option value="gpt-4.1-mini"></option>
+        </datalist>
+        <p class="small-note">Use an OpenRouter model ID when the provider is OpenRouter, or an OpenAI model name when using the OpenAI fallback.</p>
 
         <label class="toggle-row" for="aiEnabled">
           <span>
@@ -198,7 +216,7 @@
       <div class="card security-card">
         <span class="eyebrow">SECURITY NOTICE</span>
         <p>
-          The OpenAI API key is stored on the server in its environment variables.
+          The OpenRouter or OpenAI API key is stored on the server in its environment variables.
           It is never sent to the browser. Model and enable/disable changes made here
           are held in server memory and reset when the server restarts.
         </p>
